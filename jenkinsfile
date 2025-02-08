@@ -3,19 +3,19 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                bat 'cmd.exe /c npm install -D @playwright/test'
-                bat 'cmd.exe /c npx playwright install'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c npm install -D @playwright/test'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c npx playwright install'
             }
         }
         stage('Help') {
             steps {
-                bat 'cmd.exe /c npx playwright test --help'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c npx playwright test --help'
             }
         }
         stage('Run Tests') {
             steps {
-                bat 'cmd.exe /c npx playwright test --list'
-                bat 'cmd.exe /c npx playwright test'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c npx playwright test --list'
+                bat '"C:\\Windows\\System32\\cmd.exe" /c npx playwright test'
             }
         }
     }
