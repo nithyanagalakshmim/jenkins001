@@ -7,15 +7,10 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
-        stage('Help') {
+        stage('Run Login Test') {
             steps {
-                bat 'npx playwright test --help'
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                bat 'npx playwright test --list'
-                bat 'npx playwright test'
+                // Run only login.spec.js with 1 worker on Chrome
+                bat 'npx playwright test tests/login.spec.js --workers=1 --project=chromium'
             }
         }
     }
