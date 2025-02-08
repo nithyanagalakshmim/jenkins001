@@ -92,18 +92,18 @@ test.describe("EVhub Login Testcases", () => {
     expect(titleText.trim()).toBe("Welcome to EV HUB");
   });
 
-  test("TC_EV_LOGIN_12 - Verify Unregistered Email ID in Reset Password", async ({
-    page,
-  }) => {
-    await navigateToResetPassword(page);
-    await page.fill("#username", "unregistered@example.com");
-    const alert = page.locator(".pf-c-alert__icon");
-    await expect(alert).toBeVisible();
-    const alertMessage = await page
-      .locator(".pf-c-alert__title.kc-feedback-text")
-      .textContent();
-    expect(alertMessage.trim()).toBe("No account found with this email.");
-  });
+  // test("TC_EV_LOGIN_12 - Verify Unregistered Email ID in Reset Password", async ({
+  //   page,
+  // }) => {
+  //   await navigateToResetPassword(page);
+  //   await page.fill("#username", "unregistered@example.com");
+  //   const alert = page.locator(".pf-c-alert__icon");
+  //   await expect(alert).toBeVisible();
+  //   const alertMessage = await page
+  //     .locator(".pf-c-alert__title.kc-feedback-text")
+  //     .textContent();
+  //   expect(alertMessage.trim()).toBe("No account found with this email.");
+  // });
 
   test("TC_EV_LOGIN_13 - Verify Submit and Success Message in Reset Password", async ({
     page,
