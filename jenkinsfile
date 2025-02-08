@@ -20,12 +20,12 @@ pipeline {
         failure {
             emailext subject: '❌ Jenkins Playwright Test Failed!',
                      body: 'Test execution failed. Check the logs here: ${BUILD_URL}',
-                     to: 'your_email@example.com, team@example.com'
+                     to: 'nithya.m@kryptosinfosys.com , nithyanagalakshmi2002@gmail.com'
         }
         success {
             emailext subject: '✅ Jenkins Playwright Test Passed!',
                      body: 'Test execution was successful. Check details here: ${BUILD_URL}',
-                     to: 'your_email@example.com, team@example.com'
+                     to: 'nithya.m@kryptosinfosys.com , nithyanagalakshmi2002@gmail.com'
         }
     }
 }
