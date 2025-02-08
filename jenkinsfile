@@ -1,27 +1,18 @@
 pipeline {
-   agent {
-       dockerContainer {
-           image 'mcr.microsoft.com/playwright:v1.17.2-focal'
-           args '--ipc=host' // Required for Playwright browsers
-       }
-   }
-   stages {
-       stage('Install Playwright') {
-           steps {
-               sh 'npm i -D @playwright/test'
-               sh 'npx playwright install'
-           }
-       }
-       stage('Help') {
-           steps {
-               sh 'npx playwright test --help'
-           }
-       }
-       stage('Test') {
-           steps {
-               sh 'npx playwright test --list'
-               sh 'npx playwright test'
-           }
-       }
-   }
+    agent any // Use any available agent
+    stages {
+        stage('Run Playwright in Docker') {
+            steps {
+                script {
+                    docker.image('mcr.microsoft.com/playwright:v1.17.2-focal').inside('--ipc=host') {
+                        sh 'npm i -D @playwright/test'
+                        sh 'npx playwright install'
+                        sh 'npx playwright test --help'
+                        sh 'npx playwright test --list'
+                        sh 'npx playwright test'
+                    }
+                }
+            }
+        }
+    }
 }
