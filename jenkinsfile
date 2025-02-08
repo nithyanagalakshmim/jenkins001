@@ -1,7 +1,8 @@
 pipeline {
    agent {
-       docker {
+       dockerContainer {
            image 'mcr.microsoft.com/playwright:v1.17.2-focal'
+           args '--ipc=host' // Required for Playwright browsers
        }
    }
    stages {
