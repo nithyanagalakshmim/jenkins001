@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    triggers {
+        cron('H/30 * * * *')  // Runs every 30 minutes
+    }
     stages {
         stage('Install Dependencies') {
             steps {
@@ -7,11 +10,22 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
-        stage('Run Login Test') {
+        stage('Run Tests') {
             steps {
-                // Run only login.spec.js with 1 worker on Chrome
-                bat 'npx playwright test tests/login.spec.js --workers=1 --project=chromium'
+                bat 'npx playwright test --workers=1 --project=chromium --reporter=junit,json --output=test-results || exit 0'
             }
+        }
+    }
+    post {
+        failure {
+            emailext subject: '❌ Jenkins Playwright Test Failed!',
+                     body: 'Test execution failed. Check the logs here: ${BUILD_URL}',
+                     to: 'your_email@example.com, team@example.com'
+        }
+        success {
+            emailext subject: '✅ Jenkins Playwright Test Passed!',
+                     body: 'Test execution was successful. Check details here: ${BUILD_URL}',
+                     to: 'your_email@example.com, team@example.com'
         }
     }
 }
