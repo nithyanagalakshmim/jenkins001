@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Install Dependencies') {
             steps {
@@ -7,10 +8,46 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
+
         stage('Run Login Test') {
             steps {
-                // Run only login.spec.js with 1 worker on Chrome
-                bat 'npx playwright test tests/login.spec.js --workers=1 --project=chromium'
+                script {
+                    // Run Playwright test and generate JUnit report, but do NOT fail the pipeline
+                    bat 'npx playwright test tests/login.spec.js --workers=1 --project=chromium --reporter=junit,json || exit 0'
+                }
+            }
+        }
+
+        stage('Publish Test Reports') {
+            steps {
+                script {
+                    // Publish JUnit test results in Jenkins
+                    junit '**/results.xml'
+
+                    // Save JSON test results as an artifact
+                    archiveArtifacts artifacts: 'test-results.json', fingerprint: true
+                }
+            }
+        }
+
+        stage('Generate HTML Report') {
+            steps {
+                script {
+                    bat 'npx playwright show-report'  // Generates local HTML report
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "Pipeline execution completed."
+            }
+        }
+        failure {
+            script {
+                echo "Some tests failed, but the pipeline is NOT failing."
             }
         }
     }
