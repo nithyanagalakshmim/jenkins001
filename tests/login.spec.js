@@ -4,7 +4,7 @@ import {
   login,
   verifyErrorMessage,
   navigateToResetPassword,
-} from "../Utils/Login.js";
+} from "../tests-examples/Login.js";
 
 // Run Command : npx playwright test tests/Login.spec.js --headed
 
