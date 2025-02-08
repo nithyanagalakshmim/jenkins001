@@ -1,17 +1,21 @@
 pipeline {
-    agent any // Use any available agent
+    agent any
     stages {
-        stage('Run Playwright in Docker') {
+        stage('Install Dependencies') {
             steps {
-                script {
-                    docker.image('mcr.microsoft.com/playwright:v1.17.2-focal').inside('--ipc=host') {
-                        sh 'npm i -D @playwright/test'
-                        sh 'npx playwright install'
-                        sh 'npx playwright test --help'
-                        sh 'npx playwright test --list'
-                        sh 'npx playwright test'
-                    }
-                }
+                bat 'npm install -D @playwright/test'
+                bat 'npx playwright install'
+            }
+        }
+        stage('Help') {
+            steps {
+                bat 'npx playwright test --help'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                bat 'npx playwright test --list'
+                bat 'npx playwright test'
             }
         }
     }
