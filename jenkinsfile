@@ -1,8 +1,10 @@
 pipeline {
     agent any
+
     triggers {
         cron('H/30 * * * *')  // Runs every 30 minutes
     }
+
     stages {
         stage('Install Dependencies') {
             steps {
@@ -10,22 +12,61 @@ pipeline {
                 bat 'npx playwright install'
             }
         }
+
         stage('Run Tests') {
             steps {
                 bat 'npx playwright test --workers=1 --project=chromium --reporter=junit,json --output=test-results || exit 0'
             }
         }
     }
+
     post {
-        failure {
-            emailext subject: '❌ Jenkins Playwright Test Failed!',
-                     body: 'Test execution failed. Check the logs here: ${BUILD_URL}',
-                     to: 'qatestreport2024gmail.com'
+        always {
+            script {
+                def jobName = env.JOB_NAME
+                def buildNumber = env.BUILD_NUMBER
+                def pipelineStatus = currentBuild.result ?: 'UNKNOWN'
+                def bannerColor = (pipelineStatus.toUpperCase() == 'SUCCESS') ? 'green' : 'red'
+                
+                def body = """
+                <html>
+                <body>
+                    <div style="border: 4px solid ${bannerColor}; padding: 10px;">
+                        <h2>${jobName} - Build ${buildNumber}</h2>
+                        <div style="background-color: ${bannerColor}; padding: 10px;">
+                            <h3 style="color: white;">Pipeline Status: ${pipelineStatus.toUpperCase()}</h3>
+                        </div>
+                        <p>Check the <a href="${env.BUILD_URL}">console output</a>.</p>
+                    </div>
+                </body>
+                </html>
+                """
+
+                emailext(
+                    subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
+                    body: body,
+                    to: 'qatestreport2024@gmail.com',
+                    from: 'qatestreport2024@gmail.com',
+                    replyTo: 'qatestreport2024@gmail.com',
+                    mimeType: 'text/html'
+                )
+            }
         }
+
+        failure {
+            emailext(
+                subject: '❌ Jenkins Playwright Test Failed!',
+                body: 'Test execution failed. Check the logs here: ${BUILD_URL}',
+                to: 'qatestreport2024@gmail.com'
+            )
+        }
+
         success {
-            emailext subject: '✅ Jenkins Playwright Test Passed!',
-                     body: 'Test execution was successful. Check details here: ${BUILD_URL}',
-                     to: 'qatestreport2024gmail.com'
+            emailext(
+                subject: '✅ Jenkins Playwright Test Passed!',
+                body: 'Test execution was successful. Check details here: ${BUILD_URL}',
+                to: 'qatestreport2024@gmail.com'
+            )
         }
     }
 }
