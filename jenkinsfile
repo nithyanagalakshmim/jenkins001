@@ -13,7 +13,7 @@ pipeline {
                 }
                 powershell '''
                     npm install -D @playwright/test
-                    npx playwright install --timeout=60000  # Increased timeout
+                    npx playwright install
                     npx playwright install chromium --with-deps
                 '''
             }
