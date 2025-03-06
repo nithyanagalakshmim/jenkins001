@@ -8,14 +8,25 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                bat 'npm install -D @playwright/test'
-                bat 'npx playwright install'
+                script {
+                    echo "Installing Playwright dependencies..."
+                }
+                powershell '''
+                    npm install -D @playwright/test
+                    npx playwright install --timeout=60000  # Increased timeout
+                    npx playwright install chromium --with-deps
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npx playwright test --workers=1 --project=chromium --reporter=junit,json --output=test-results || exit 0'
+                script {
+                    echo "Running Playwright tests..."
+                }
+                powershell '''
+                    npx playwright test --workers=1 --project=chromium --reporter=junit,json --output=test-results
+                '''
             }
         }
     }
@@ -27,7 +38,7 @@ pipeline {
                 def buildNumber = env.BUILD_NUMBER
                 def pipelineStatus = currentBuild.result ?: 'UNKNOWN'
                 def bannerColor = (pipelineStatus.toUpperCase() == 'SUCCESS') ? 'green' : 'red'
-                
+
                 def body = """
                 <html>
                 <body>
